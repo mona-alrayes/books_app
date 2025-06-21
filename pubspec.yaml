@@ -1,0 +1,39 @@
+name: books_app
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # لإدارة الحالة
+  provider: ^6.0.5
+
+  # للتعامل مع HTTP وREST APIs
+  http: ^0.13.5
+
+  # لاختيار الصور من المعرض والكاميرا
+  image_picker: ^0.8.7+4
+
+  # للتعرف على نوع الملف MIME (لرفع الصور)
+  mime: ^1.0.2
+
+  # لمعالجة أنواع محتوى HTTP
+  http_parser: ^4.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
