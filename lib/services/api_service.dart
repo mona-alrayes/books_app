@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
+import 'package:path/path.dart';
 import '../models/author.dart';
 import '../models/publisher.dart';
 
@@ -28,7 +28,6 @@ class ApiService {
       if (_token != null) 'Authorization': 'Bearer $_token',
     };
     print('Building headers. Token present: ${_token != null}');
-    print('Headers: $headers');
     return headers;
   }
 
@@ -40,48 +39,38 @@ class ApiService {
       try {
         final body = jsonDecode(response.body);
         message = body['message'] ?? body.toString();
-        print('Error message from API: $message');
       } catch (_) {
         message = response.body;
-        print('Raw error response: $message');
       }
-      throw HttpException('Error ${response.statusCode}: $message');
+      throw HttpException('خطأ ${response.statusCode}: $message');
     }
   }
 
   /// GET request
   static Future<dynamic> get(String endpoint) async {
-    final url = Uri.parse('$baseUrl$endpoint');
-    print('Making GET request to: $url');
-    print('Headers: ${_headers()}');
-    final response = await http.get(url, headers: _headers());
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    _handleErrors(response);
-    return jsonDecode(response.body);
-  }
+  final url = Uri.parse('$baseUrl$endpoint');
+  final response = await http.get(url, headers: _headers());
+  print('GET $url status: ${response.statusCode}');
+  print('Response body: ${response.body}');
+  _handleErrors(response);
+  return jsonDecode(response.body);
+}
+
 
   /// POST request with JSON body
-  static Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
+  static Future<dynamic> post(
+      String endpoint, Map<String, dynamic> data) async {
     final url = Uri.parse('$baseUrl$endpoint');
-    print('Making POST request to: $url');
-    print('POST data: $data');
-    print('POST headers: ${_headers()}');
-    
     final response = await http.post(
       url,
       headers: _headers(),
       body: jsonEncode(data),
     );
-    
-    print('POST response status: ${response.statusCode}');
-    print('POST response body: ${response.body}');
-    
     _handleErrors(response);
     return jsonDecode(response.body);
   }
 
-  /// POST multipart (e.g., book cover upload)
+  /// POST multipart (مثل غلاف الكتاب)
   static Future<dynamic> postMultipart(
     String endpoint,
     Map<String, String> fields, {
@@ -93,7 +82,8 @@ class ApiService {
       ..fields.addAll(fields);
 
     if (filePath != null) {
-      request.files.add(await http.MultipartFile.fromPath('cover_image', filePath));
+      request.files
+          .add(await http.MultipartFile.fromPath('cover_image', filePath));
     }
 
     final streamed = await request.send();
@@ -110,12 +100,10 @@ class ApiService {
     required String email,
     required String password,
   }) async {
-    print('Logging in with email: $email');
     final response = await post('/login', {
       'email': email,
       'password': password,
     });
-    print('Login response: $response');
     return response;
   }
 
@@ -143,7 +131,6 @@ class ApiService {
     required String pName,
     required String country,
   }) async {
-    // note: backend now expects 'name' instead of 'PName'
     await post('/publishers', {
       'PName': pName,
       'Country': country,
@@ -151,26 +138,24 @@ class ApiService {
   }
 
   static Future<List<Author>> fetchAuthors() async {
-    print('Fetching authors from API...');
-    try {
-      final data = await get('/authors/search?name=');
-      print('Authors API response: $data');
-      return (data['data'] as List).map((e) => Author.fromJson(e)).toList();
-    } catch (e) {
-      print('Error fetching authors: $e');
-      rethrow;
+    final jsonResponse = await get('/authors');
+    if (jsonResponse is Map<String, dynamic> &&
+        jsonResponse.containsKey('data')) {
+      final authorsList = jsonResponse['data'] as List;
+      return authorsList.map((e) => Author.fromJson(e)).toList();
+    } else {
+      throw Exception('Invalid response format for authors');
     }
   }
 
   static Future<List<Publisher>> fetchPublishers() async {
-    print('Fetching publishers from API...');
-    try {
-      final data = await get('/publishers/search?name=');
-      print('Publishers API response: $data');
-      return (data['data'] as List).map((e) => Publisher.fromJson(e)).toList();
-    } catch (e) {
-      print('Error fetching publishers: $e');
-      rethrow;
+    final jsonResponse = await get('/publishers');
+    if (jsonResponse is Map<String, dynamic> &&
+        jsonResponse.containsKey('data')) {
+      final publishersList = jsonResponse['data'] as List;
+      return publishersList.map((e) => Publisher.fromJson(e)).toList();
+    } else {
+      throw Exception('Invalid response format for publishers');
     }
   }
 
@@ -190,8 +175,8 @@ class ApiService {
       'Title': title,
       'Type': type,
       'Price': price.toString(),
-      'Author_id': authorId.toString(),
-      'Publisher_id': publisherId.toString(),
+      'author_id': authorId.toString(),
+      'publisher_id': publisherId.toString(),
     };
     await postMultipart('/books', fields, filePath: coverImage?.path);
   }

@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../models/author.dart';
 import '../../models/publisher.dart';
 import '../../services/api_service.dart';
@@ -39,21 +37,28 @@ class _AddBookScreenState extends State<AddBookScreen> {
 
   Future<void> _loadAuthorsPublishers() async {
     try {
-      print('Loading authors and publishers...');
+      print('Fetching authors and publishers...');
       final authors = await ApiService.fetchAuthors();
       final publishers = await ApiService.fetchPublishers();
-      print('Authors loaded: ${authors.length}');
-      print('Publishers loaded: ${publishers.length}');
-      print('Authors: ${authors.map((a) => '${a.fName} ${a.lName}').toList()}');
-      print('Publishers: ${publishers.map((p) => p.name).toList()}');
+
+      print(
+          'Loaded ${authors.length} authors and ${publishers.length} publishers');
+
+      // ✅ أضف هنا
+      print('_authors: $authors');
+      print('_publishers: $publishers');
+
       setState(() {
         _authors = authors;
         _publishers = publishers;
+
+        // لتحديد أول عنصر كافتراضي (اختياري)
+        if (_authors.isNotEmpty) _selectedAuthor = _authors.first;
+        if (_publishers.isNotEmpty) _selectedPublisher = _publishers.first;
       });
     } catch (e) {
-      print('Error loading authors/publishers: $e');
       setState(() {
-        _error = e.toString();
+        _error = 'حدث خطأ أثناء تحميل المؤلفين أو الناشرين';
       });
     }
   }
@@ -70,6 +75,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
     if (_selectedAuthor == null || _selectedPublisher == null) {
       setState(() {
         _error = 'يرجى اختيار المؤلف والناشر';
@@ -93,7 +99,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تم إضافة الكتاب بنجاح')),
+        const SnackBar(content: Text('تم إضافة الكتاب بنجاح')),
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -112,35 +118,52 @@ class _AddBookScreenState extends State<AddBookScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(title: Text('إضافة كتاب جديد')),
+        appBar: AppBar(title: const Text('إضافة كتاب جديد')),
         body: _loading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
                 padding: const EdgeInsets.all(16),
                 child: SingleChildScrollView(
                   child: Form(
                     key: _formKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (_error != null)
-                          Text(_error!, style: TextStyle(color: Colors.red)),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              _error!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ),
+
+                        // ——— Title ———
                         TextFormField(
                           controller: _titleCtrl,
-                          decoration: InputDecoration(labelText: 'عنوان الكتاب'),
-                          validator: (v) =>
-                              v == null || v.isEmpty ? 'يرجى إدخال العنوان' : null,
+                          decoration:
+                              const InputDecoration(labelText: 'عنوان الكتاب'),
+                          validator: (v) => v == null || v.isEmpty
+                              ? 'يرجى إدخال العنوان'
+                              : null,
                         ),
+
+                        // ——— Type ———
                         TextFormField(
                           controller: _typeCtrl,
-                          decoration: InputDecoration(labelText: 'نوع الكتاب'),
-                          validator: (v) =>
-                              v == null || v.isEmpty ? 'يرجى إدخال نوع الكتاب' : null,
+                          decoration:
+                              const InputDecoration(labelText: 'نوع الكتاب'),
+                          validator: (v) => v == null || v.isEmpty
+                              ? 'يرجى إدخال النوع'
+                              : null,
                         ),
+
+                        // ——— Price ———
                         TextFormField(
                           controller: _priceCtrl,
-                          decoration: InputDecoration(labelText: 'السعر'),
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
+                          decoration: const InputDecoration(labelText: 'السعر'),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           validator: (v) {
                             if (v == null || v.isEmpty) {
                               return 'يرجى إدخال السعر';
@@ -151,50 +174,63 @@ class _AddBookScreenState extends State<AddBookScreen> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 12),
+
+                        const SizedBox(height: 16),
+
+                        // ——— Author Dropdown ———
                         DropdownButtonFormField<Author>(
                           value: _selectedAuthor,
-                          items: _authors
-                              .map(
-                                (a) => DropdownMenuItem(
-                                  value: a,
-                                  child: Text('${a.fName} ${a.lName}'),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (val) => setState(() => _selectedAuthor = val),
-                          decoration: InputDecoration(labelText: 'المؤلف'),
+                          items: _authors.map((a) {
+                            return DropdownMenuItem<Author>(
+                              value: a,
+                              child: Text('${a.fName} ${a.lName}'),
+                            );
+                          }).toList(),
+                          onChanged: (val) =>
+                              setState(() => _selectedAuthor = val),
+                          decoration:
+                              const InputDecoration(labelText: 'المؤلف'),
                           validator: (v) =>
                               v == null ? 'يرجى اختيار المؤلف' : null,
                         ),
+
+                        const SizedBox(height: 12),
+
+                        // ——— Publisher Dropdown ———
                         DropdownButtonFormField<Publisher>(
                           value: _selectedPublisher,
-                          items: _publishers
-                              .map(
-                                (p) => DropdownMenuItem(
-                                  value: p,
-                                  child: Text(p.name),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (val) => setState(() => _selectedPublisher = val),
-                          decoration: InputDecoration(labelText: 'الناشر'),
+                          items: _publishers.map((p) {
+                            return DropdownMenuItem<Publisher>(
+                              value: p,
+                              child: Text(p.name),
+                            );
+                          }).toList(),
+                          onChanged: (val) =>
+                              setState(() => _selectedPublisher = val),
+                          decoration:
+                              const InputDecoration(labelText: 'الناشر'),
                           validator: (v) =>
                               v == null ? 'يرجى اختيار الناشر' : null,
                         ),
-                        SizedBox(height: 12),
+
+                        const SizedBox(height: 16),
+
+                        // ——— Cover Image Picker ———
                         _coverImage == null
-                            ? Text('لم يتم اختيار صورة الغلاف')
+                            ? const Text('لم يتم اختيار صورة الغلاف')
                             : Image.file(_coverImage!, height: 150),
                         TextButton.icon(
                           onPressed: _pickImage,
-                          icon: Icon(Icons.image),
-                          label: Text('اختر صورة الغلاف'),
+                          icon: const Icon(Icons.image),
+                          label: const Text('اختر صورة الغلاف'),
                         ),
-                        SizedBox(height: 20),
+
+                        const SizedBox(height: 24),
+
+                        // ——— Submit Button ———
                         ElevatedButton(
                           onPressed: _submit,
-                          child: Text('إضافة الكتاب'),
+                          child: const Text('إضافة الكتاب'),
                         ),
                       ],
                     ),

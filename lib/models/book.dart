@@ -31,8 +31,8 @@ class Book {
           ? double.tryParse(json['Price']) ?? 0
           : (json['Price']?.toDouble() ?? 0),
       coverImageUrl: json['cover_image_url'],
-      publisherId: json['Publisher_id'],
-      authorId: json['Author_id'],
+      publisherId: json['publisher_id'],
+      authorId: json['author_id'],
       authorName: json['author'] != null
           ? '${json['author']['FName']} ${json['author']['LName']}'
           : null,

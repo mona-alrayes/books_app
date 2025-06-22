@@ -8,7 +8,7 @@ class Publisher {
   factory Publisher.fromJson(Map<String, dynamic> json) {
     return Publisher(
       id: json['id'],
-      name: json['name'], // updated key
+      name: json['name'], // تأكد أنه 'name' كما في الـ API
       country: json['country'],
     );
   }

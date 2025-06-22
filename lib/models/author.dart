@@ -18,21 +18,21 @@ class Author {
   factory Author.fromJson(Map<String, dynamic> json) {
     return Author(
       id: json['id'],
-      fName: json['FName'],
-      lName: json['LName'],
-      country: json['Country'],
-      city: json['City'],
-      address: json['Address'],
+      fName: json['fName'], // صغير
+      lName: json['lName'],
+      country: json['country'],
+      city: json['city'],
+      address: json['address'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'FName': fName,
-      'LName': lName,
-      'Country': country,
-      'City': city,
-      'Address': address,
+      'fName': fName,
+      'lName': lName,
+      'country': country,
+      'city': city,
+      'address': address,
     };
   }
 }
