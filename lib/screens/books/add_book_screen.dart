@@ -115,128 +115,512 @@ class _AddBookScreenState extends State<AddBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 600;
+    
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(title: const Text('إضافة كتاب جديد')),
+        appBar: AppBar(
+          title: const Text('إضافة كتاب جديد'),
+          backgroundColor: Colors.blue.shade700,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+          ),
+        ),
         body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (_error != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Text(
-                              _error!,
-                              style: const TextStyle(color: Colors.red),
+            ? Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.blue.shade50,
+                      Colors.white,
+                    ],
+                  ),
+                ),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('جاري إضافة الكتاب...'),
+                    ],
+                  ),
+                ),
+              )
+            : Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.blue.shade50,
+                      Colors.white,
+                    ],
+                  ),
+                ),
+                child: SafeArea(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Header
+                          Container(
+                            padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.add_circle,
+                                  size: isSmallScreen ? 40 : 50,
+                                  color: Colors.blue.shade700,
+                                ),
+                                SizedBox(height: isSmallScreen ? 8 : 12),
+                                Text(
+                                  'إضافة كتاب جديد',
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen ? 20 : 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue.shade700,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'املأ المعلومات التالية لإضافة كتاب جديد',
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen ? 12 : 14,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
                           ),
 
-                        // ——— Title ———
-                        TextFormField(
-                          controller: _titleCtrl,
-                          decoration:
-                              const InputDecoration(labelText: 'عنوان الكتاب'),
-                          validator: (v) => v == null || v.isEmpty
-                              ? 'يرجى إدخال العنوان'
-                              : null,
-                        ),
+                          SizedBox(height: isSmallScreen ? 20 : 24),
 
-                        // ——— Type ———
-                        TextFormField(
-                          controller: _typeCtrl,
-                          decoration:
-                              const InputDecoration(labelText: 'نوع الكتاب'),
-                          validator: (v) => v == null || v.isEmpty
-                              ? 'يرجى إدخال النوع'
-                              : null,
-                        ),
+                          // Error Message
+                          if (_error != null)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              margin: const EdgeInsets.only(bottom: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.red.shade200),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.error_outline, color: Colors.red.shade600),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      _error!,
+                                      style: TextStyle(
+                                        color: Colors.red.shade700,
+                                        fontSize: isSmallScreen ? 12 : 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
 
-                        // ——— Price ———
-                        TextFormField(
-                          controller: _priceCtrl,
-                          decoration: const InputDecoration(labelText: 'السعر'),
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              return 'يرجى إدخال السعر';
-                            }
-                            if (double.tryParse(v) == null) {
-                              return 'يرجى إدخال رقم صحيح للسعر';
-                            }
-                            return null;
-                          },
-                        ),
+                          // Book Information Card
+                          Container(
+                            padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.book, color: Colors.blue.shade600),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'معلومات الكتاب',
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 16 : 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: isSmallScreen ? 16 : 20),
 
-                        const SizedBox(height: 16),
+                                // Title Field
+                                _buildTextField(
+                                  controller: _titleCtrl,
+                                  label: 'عنوان الكتاب',
+                                  icon: Icons.title,
+                                  validator: (v) =>
+                                      v == null || v.isEmpty ? 'يرجى إدخال عنوان الكتاب' : null,
+                                ),
 
-                        // ——— Author Dropdown ———
-                        DropdownButtonFormField<Author>(
-                          value: _selectedAuthor,
-                          items: _authors.map((a) {
-                            return DropdownMenuItem<Author>(
-                              value: a,
-                              child: Text('${a.fName} ${a.lName}'),
-                            );
-                          }).toList(),
-                          onChanged: (val) =>
-                              setState(() => _selectedAuthor = val),
-                          decoration:
-                              const InputDecoration(labelText: 'المؤلف'),
-                          validator: (v) =>
-                              v == null ? 'يرجى اختيار المؤلف' : null,
-                        ),
+                                SizedBox(height: isSmallScreen ? 12 : 16),
 
-                        const SizedBox(height: 12),
+                                // Type Field
+                                _buildTextField(
+                                  controller: _typeCtrl,
+                                  label: 'نوع الكتاب',
+                                  icon: Icons.category,
+                                  validator: (v) =>
+                                      v == null || v.isEmpty ? 'يرجى إدخال نوع الكتاب' : null,
+                                ),
 
-                        // ——— Publisher Dropdown ———
-                        DropdownButtonFormField<Publisher>(
-                          value: _selectedPublisher,
-                          items: _publishers.map((p) {
-                            return DropdownMenuItem<Publisher>(
-                              value: p,
-                              child: Text(p.name),
-                            );
-                          }).toList(),
-                          onChanged: (val) =>
-                              setState(() => _selectedPublisher = val),
-                          decoration:
-                              const InputDecoration(labelText: 'الناشر'),
-                          validator: (v) =>
-                              v == null ? 'يرجى اختيار الناشر' : null,
-                        ),
+                                SizedBox(height: isSmallScreen ? 12 : 16),
 
-                        const SizedBox(height: 16),
+                                // Price Field
+                                _buildTextField(
+                                  controller: _priceCtrl,
+                                  label: 'السعر',
+                                  icon: Icons.attach_money,
+                                  keyboardType: TextInputType.number,
+                                  validator: (v) {
+                                    if (v == null || v.isEmpty) {
+                                      return 'يرجى إدخال السعر';
+                                    }
+                                    if (double.tryParse(v) == null) {
+                                      return 'يرجى إدخال سعر صحيح';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
 
-                        // ——— Cover Image Picker ———
-                        _coverImage == null
-                            ? const Text('لم يتم اختيار صورة الغلاف')
-                            : Image.file(_coverImage!, height: 150),
-                        TextButton.icon(
-                          onPressed: _pickImage,
-                          icon: const Icon(Icons.image),
-                          label: const Text('اختر صورة الغلاف'),
-                        ),
+                          SizedBox(height: isSmallScreen ? 20 : 24),
 
-                        const SizedBox(height: 24),
+                          // Author and Publisher Selection Card
+                          Container(
+                            padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.person, color: Colors.blue.shade600),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'المؤلف والناشر',
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 16 : 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: isSmallScreen ? 16 : 20),
 
-                        // ——— Submit Button ———
-                        ElevatedButton(
-                          onPressed: _submit,
-                          child: const Text('إضافة الكتاب'),
-                        ),
-                      ],
+                                // Author Dropdown
+                                _buildDropdownField(
+                                  label: 'المؤلف',
+                                  icon: Icons.person_outline,
+                                  value: _selectedAuthor,
+                                  items: _authors.map((author) {
+                                    return DropdownMenuItem<Author>(
+                                      value: author,
+                                      child: Text(
+                                        '${author.fName} ${author.lName}',
+                                        style: TextStyle(
+                                          fontSize: isSmallScreen ? 12 : 14,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (Author? value) {
+                                    setState(() {
+                                      _selectedAuthor = value;
+                                    });
+                                  },
+                                ),
+
+                                SizedBox(height: isSmallScreen ? 12 : 16),
+
+                                // Publisher Dropdown
+                                _buildDropdownField(
+                                  label: 'الناشر',
+                                  icon: Icons.business_outlined,
+                                  value: _selectedPublisher,
+                                  items: _publishers.map((publisher) {
+                                    return DropdownMenuItem<Publisher>(
+                                      value: publisher,
+                                      child: Text(
+                                        publisher.name,
+                                        style: TextStyle(
+                                          fontSize: isSmallScreen ? 12 : 14,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (Publisher? value) {
+                                    setState(() {
+                                      _selectedPublisher = value;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: isSmallScreen ? 20 : 24),
+
+                          // Cover Image Card
+                          Container(
+                            padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.image, color: Colors.blue.shade600),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'صورة الغلاف',
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 16 : 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: isSmallScreen ? 16 : 20),
+
+                                // Cover Image Preview
+                                if (_coverImage != null)
+                                  Container(
+                                    width: double.infinity,
+                                    height: isSmallScreen ? 150 : 200,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.file(
+                                        _coverImage!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+
+                                SizedBox(height: isSmallScreen ? 12 : 16),
+
+                                // Pick Image Button
+                                Container(
+                                  width: double.infinity,
+                                  height: isSmallScreen ? 48 : 56,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.blue.withOpacity(0.3),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: _pickImage,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue.shade600,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    icon: Icon(
+                                      _coverImage != null ? Icons.edit : Icons.add_photo_alternate,
+                                      size: isSmallScreen ? 20 : 24,
+                                    ),
+                                    label: Text(
+                                      _coverImage != null ? 'تغيير الصورة' : 'اختيار صورة الغلاف',
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 14 : 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: isSmallScreen ? 24 : 32),
+
+                          // Submit Button
+                          Container(
+                            height: isSmallScreen ? 48 : 56,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.blue.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: _submit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue.shade800,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                'إضافة الكتاب',
+                                style: TextStyle(
+                                  fontSize: isSmallScreen ? 16 : 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: Colors.blue.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+        ),
+        validator: validator,
+      ),
+    );
+  }
+
+  Widget _buildDropdownField<T>({
+    required String label,
+    required IconData icon,
+    required T? value,
+    required List<DropdownMenuItem<T>> items,
+    required Function(T?) onChanged,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: DropdownButtonFormField<T>(
+        value: value,
+        items: items,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: Colors.blue.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+        ),
+        dropdownColor: Colors.white,
+        icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade600),
       ),
     );
   }
