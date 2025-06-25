@@ -153,7 +153,7 @@ class _AddPublisherScreenState extends State<AddPublisherScreen> {
                           const SizedBox(height: 24),
 
                           // Error Message
-                          if (_error != null)
+                      if (_error != null)
                             Container(
                               padding: const EdgeInsets.all(16),
                               margin: const EdgeInsets.only(bottom: 20),
@@ -214,23 +214,23 @@ class _AddPublisherScreenState extends State<AddPublisherScreen> {
 
                                 // Publisher Name Field
                                 _buildTextField(
-                                  controller: _pNameCtrl,
+                        controller: _pNameCtrl,
                                   label: 'اسم الناشر',
                                   icon: Icons.business_outlined,
-                                  validator: (v) =>
-                                      v == null || v.isEmpty ? 'يرجى إدخال اسم الناشر' : null,
-                                ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'يرجى إدخال اسم الناشر' : null,
+                      ),
 
                                 const SizedBox(height: 16),
 
                                 // Country Field
                                 _buildTextField(
-                                  controller: _countryCtrl,
+                        controller: _countryCtrl,
                                   label: 'الدولة',
                                   icon: Icons.flag,
-                                  validator: (v) =>
-                                      v == null || v.isEmpty ? 'يرجى إدخال الدولة' : null,
-                                ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'يرجى إدخال الدولة' : null,
+                      ),
                               ],
                             ),
                           ),
@@ -251,7 +251,7 @@ class _AddPublisherScreenState extends State<AddPublisherScreen> {
                               ],
                             ),
                             child: ElevatedButton(
-                              onPressed: _submit,
+                        onPressed: _submit,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange.shade700,
                                 foregroundColor: Colors.white,
@@ -268,13 +268,13 @@ class _AddPublisherScreenState extends State<AddPublisherScreen> {
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                      ),
+                    ],
                       ),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }

@@ -441,7 +441,7 @@ class _SearchPublishersScreenState extends State<SearchPublishersScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        book['Title'] ?? 'عنوان غير محدد',
+                                        book.title,
                                         style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -449,7 +449,7 @@ class _SearchPublishersScreenState extends State<SearchPublishersScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'النوع: ${book['Type'] ?? 'غير محدد'}',
+                                        'النوع: ${book.type}',
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.grey.shade600,
@@ -457,7 +457,7 @@ class _SearchPublishersScreenState extends State<SearchPublishersScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'السعر: ${book['Price'] ?? 'غير محدد'} ريال',
+                                        'السعر: ${book.price.toStringAsFixed(2)} ريال',
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.grey.shade600,

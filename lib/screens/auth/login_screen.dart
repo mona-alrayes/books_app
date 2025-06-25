@@ -71,8 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
               right: 24,
               bottom: 24,
             ),
-            child: Form(
-              key: _formKey,
+          child: Form(
+            key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -80,8 +80,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                   // Logo and Title
                   Center(
-                    child: Column(
-                      children: [
+            child: Column(
+              children: [
                         Container(
                           width: 100,
                           height: 100,
@@ -119,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
+                  Text(
                           'سجل دخولك للوصول إلى مكتبتك',
                           style: TextStyle(
                             fontSize: 16,
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.red.shade700,
                                 fontSize: 14,
                               ),
-                            ),
+                  ),
                           ),
                         ],
                       ),
@@ -173,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     child: TextFormField(
-                      controller: _emailCtrl,
+                  controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: 'البريد الإلكتروني',
@@ -189,14 +189,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           vertical: 16,
                         ),
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty)
-                          return 'يرجى إدخال البريد الإلكتروني';
-                        if (!val.contains('@'))
-                          return 'يرجى إدخال بريد إلكتروني صالح';
-                        return null;
-                      },
-                    ),
+                  validator: (val) {
+                    if (val == null || val.isEmpty)
+                      return 'يرجى إدخال البريد الإلكتروني';
+                    if (!val.contains('@'))
+                      return 'يرجى إدخال بريد إلكتروني صالح';
+                    return null;
+                  },
+                ),
                   ),
                   
                   const SizedBox(height: 20),
@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     child: TextFormField(
-                      controller: _passwordCtrl,
+                  controller: _passwordCtrl,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         labelText: 'كلمة المرور',
@@ -242,12 +242,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           vertical: 16,
                         ),
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty)
-                          return 'يرجى إدخال كلمة المرور';
-                        return null;
-                      },
-                    ),
+                  validator: (val) {
+                    if (val == null || val.isEmpty)
+                      return 'يرجى إدخال كلمة المرور';
+                    return null;
+                  },
+                ),
                   ),
                   
                   const SizedBox(height: 32),
@@ -265,8 +265,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _login,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.blue.shade700,
@@ -275,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: _isLoading
+                    child: _isLoading
                           ? SizedBox(
                               width: 24,
                               height: 24,
@@ -292,8 +292,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
-                    ),
+                  ),
+                ),
                   ),
                   
                   const SizedBox(height: 24),
@@ -309,10 +309,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 16,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed('/register');
-                        },
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/register');
+                  },
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -325,8 +325,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: TextDecoration.underline,
                           ),
                         ),
-                      ),
-                    ],
+                ),
+              ],
                   ),
                 ],
               ),

@@ -30,8 +30,12 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
 
   Future<void> _loadBooks() async {
     try {
-      final books = await Provider.of<AuthorProvider>(context, listen: false)
+      print('=== DEBUG: Loading Author Books ===');
+      final books = await context.read<AuthorProvider>()
           .fetchBooksByAuthor(authorId);
+      print('=== DEBUG: Author Books Loaded ===');
+      print('Books count: ${books.length}');
+      
       setState(() {
         _books = books;
       });
@@ -54,8 +58,8 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('كتب: $authorName'),
+      appBar: AppBar(
+        title: Text('كتب: $authorName'),
           backgroundColor: Colors.green.shade700,
           foregroundColor: Colors.white,
           elevation: 0,
@@ -64,8 +68,8 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
               bottom: Radius.circular(20),
             ),
           ),
-        ),
-        body: _isLoading
+      ),
+      body: _isLoading
             ? Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -88,7 +92,7 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
                   ),
                 ),
               )
-            : _books.isEmpty
+          : _books.isEmpty
                 ? Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -150,14 +154,14 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
                       ),
                     ),
                     child: RefreshIndicator(
-                      onRefresh: _loadBooks,
+                  onRefresh: _loadBooks,
                       color: Colors.green.shade700,
                       child: ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(20),
-                        itemCount: _books.length,
-                        itemBuilder: (ctx, i) {
-                          final book = _books[i];
+                    itemCount: _books.length,
+                    itemBuilder: (ctx, i) {
+                      final book = _books[i];
                           return Container(
                             margin: const EdgeInsets.only(bottom: 16),
                             decoration: BoxDecoration(
@@ -273,12 +277,12 @@ class _AuthorBooksScreenState extends State<AuthorBooksScreen> {
                                 ],
                               ),
                             ),
-                          );
-                        },
+                      );
+                    },
                       ),
                     ),
                   ),
-      ),
+                ),
     );
   }
 }

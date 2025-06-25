@@ -30,12 +30,14 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
 
   Future<void> _loadBooks() async {
     try {
-      final booksData =
-          await Provider.of<PublisherProvider>(context, listen: false)
-              .fetchBooksByPublisher(publisherId);
+      print('=== DEBUG: Loading Publisher Books ===');
+      final books = await context.read<PublisherProvider>()
+          .fetchBooksByPublisher(publisherId);
+      print('=== DEBUG: Publisher Books Loaded ===');
+      print('Books count: ${books.length}');
 
       setState(() {
-        _books = booksData.map((bookJson) => Book.fromJson(bookJson)).toList();
+        _books = books;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -56,8 +58,8 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('كتب: $publisherName'),
+      appBar: AppBar(
+        title: Text('كتب: $publisherName'),
           backgroundColor: Colors.orange.shade700,
           foregroundColor: Colors.white,
           elevation: 0,
@@ -66,8 +68,8 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
               bottom: Radius.circular(20),
             ),
           ),
-        ),
-        body: _isLoading
+      ),
+      body: _isLoading
             ? Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -90,7 +92,7 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
                   ),
                 ),
               )
-            : _books.isEmpty
+          : _books.isEmpty
                 ? Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -120,7 +122,7 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            'لا توجد كتب لهذا الناشر',
+                    'لا توجد كتب لهذا الناشر',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -152,14 +154,14 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
                       ),
                     ),
                     child: RefreshIndicator(
-                      onRefresh: _loadBooks,
+                  onRefresh: _loadBooks,
                       color: Colors.orange.shade700,
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(20),
-                        itemCount: _books.length,
-                        itemBuilder: (ctx, i) {
-                          final book = _books[i];
+                    itemCount: _books.length,
+                    itemBuilder: (ctx, i) {
+                      final book = _books[i];
                           return Container(
                             margin: const EdgeInsets.only(bottom: 16),
                             decoration: BoxDecoration(
@@ -194,9 +196,9 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: book.coverImageUrl != null
-                                          ? Image.network(
-                                              book.coverImageUrl!,
-                                              fit: BoxFit.cover,
+                            ? Image.network(
+                                book.coverImageUrl!,
+                                fit: BoxFit.cover,
                                               errorBuilder: (context, error, stackTrace) {
                                                 return Container(
                                                   color: Colors.grey.shade200,
@@ -275,12 +277,12 @@ class _PublisherBooksScreenState extends State<PublisherBooksScreen> {
                                 ],
                               ),
                             ),
-                          );
-                        },
+                      );
+                    },
                       ),
                     ),
                   ),
-      ),
+                ),
     );
   }
 }

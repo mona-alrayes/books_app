@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../models/author.dart';
 import '../../models/publisher.dart';
 import '../../services/api_service.dart';
+import 'package:provider/provider.dart';
+import '../../providers/book_provider.dart';
 
 class AddBookScreen extends StatefulWidget {
   const AddBookScreen({super.key});
@@ -89,6 +91,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
     });
 
     try {
+      print('=== DEBUG: Submitting Book ===');
       await ApiService.addBook(
         title: _titleCtrl.text.trim(),
         type: _typeCtrl.text.trim(),
@@ -98,11 +101,21 @@ class _AddBookScreenState extends State<AddBookScreen> {
         coverImage: _coverImage,
       );
 
+      print('=== DEBUG: Book Added Successfully ===');
+      
+      // تحديث قائمة الكتب
+      await context.read<BookProvider>().fetchBooks();
+      print('=== DEBUG: Books List Updated ===');
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم إضافة الكتاب بنجاح')),
       );
-      Navigator.of(context).pop();
+      
+      // العودة إلى الشاشة السابقة مع تحديث البيانات
+      Navigator.of(context).pop(true);
     } catch (e) {
+      print('=== DEBUG: Error Adding Book ===');
+      print('Error: $e');
       setState(() {
         _error = 'فشل إضافة الكتاب: $e';
       });

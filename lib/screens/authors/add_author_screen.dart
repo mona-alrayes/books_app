@@ -159,7 +159,7 @@ class _AddAuthorScreenState extends State<AddAuthorScreen> {
                           const SizedBox(height: 24),
 
                           // Error Message
-                          if (_error != null)
+                      if (_error != null)
                             Container(
                               padding: const EdgeInsets.all(16),
                               margin: const EdgeInsets.only(bottom: 20),
@@ -220,23 +220,23 @@ class _AddAuthorScreenState extends State<AddAuthorScreen> {
 
                                 // First Name Field
                                 _buildTextField(
-                                  controller: _fNameCtrl,
+                        controller: _fNameCtrl,
                                   label: 'الاسم الأول',
                                   icon: Icons.person_outline,
-                                  validator: (v) =>
-                                      v == null || v.isEmpty ? 'يرجى إدخال الاسم الأول' : null,
-                                ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'يرجى إدخال الاسم الأول' : null,
+                      ),
 
                                 const SizedBox(height: 16),
 
                                 // Last Name Field
                                 _buildTextField(
-                                  controller: _lNameCtrl,
+                        controller: _lNameCtrl,
                                   label: 'اسم العائلة',
                                   icon: Icons.person_outline,
-                                  validator: (v) =>
-                                      v == null || v.isEmpty ? 'يرجى إدخال اسم العائلة' : null,
-                                ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'يرجى إدخال اسم العائلة' : null,
+                      ),
                               ],
                             ),
                           ),
@@ -278,34 +278,34 @@ class _AddAuthorScreenState extends State<AddAuthorScreen> {
 
                                 // Country Field
                                 _buildTextField(
-                                  controller: _countryCtrl,
+                        controller: _countryCtrl,
                                   label: 'الدولة',
                                   icon: Icons.flag,
-                                  validator: (v) =>
-                                      v == null || v.isEmpty ? 'يرجى إدخال الدولة' : null,
-                                ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'يرجى إدخال الدولة' : null,
+                      ),
 
                                 const SizedBox(height: 16),
 
                                 // City Field
                                 _buildTextField(
-                                  controller: _cityCtrl,
+                        controller: _cityCtrl,
                                   label: 'المدينة',
                                   icon: Icons.location_city,
-                                  validator: (v) =>
-                                      v == null || v.isEmpty ? 'يرجى إدخال المدينة' : null,
-                                ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'يرجى إدخال المدينة' : null,
+                      ),
 
                                 const SizedBox(height: 16),
 
                                 // Address Field
                                 _buildTextField(
-                                  controller: _addressCtrl,
+                        controller: _addressCtrl,
                                   label: 'العنوان',
                                   icon: Icons.home,
-                                  validator: (v) =>
-                                      v == null || v.isEmpty ? 'يرجى إدخال العنوان' : null,
-                                ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'يرجى إدخال العنوان' : null,
+                      ),
                               ],
                             ),
                           ),
@@ -326,7 +326,7 @@ class _AddAuthorScreenState extends State<AddAuthorScreen> {
                               ],
                             ),
                             child: ElevatedButton(
-                              onPressed: _submit,
+                        onPressed: _submit,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green.shade700,
                                 foregroundColor: Colors.white,
@@ -343,13 +343,13 @@ class _AddAuthorScreenState extends State<AddAuthorScreen> {
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                      ),
+                    ],
                       ),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }

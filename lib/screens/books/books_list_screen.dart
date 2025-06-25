@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/providers/book_provider.dart';
+import '/providers/auth_provider.dart';
 import '/models/book.dart';
 import 'book_details_screen.dart';
 
@@ -30,7 +31,7 @@ class _BooksListScreenState extends State<BooksListScreen> {
   }
 
   Future<void> _loadBooks() async {
-    await Provider.of<BookProvider>(context, listen: false).fetchBooks();
+    await context.read<BookProvider>().fetchBooks();
     setState(() {
       _isLoading = false;
     });
@@ -41,7 +42,7 @@ class _BooksListScreenState extends State<BooksListScreen> {
       _isSearching = true;
       _searchQuery = query;
     });
-    await Provider.of<BookProvider>(context, listen: false).searchBooks(query);
+    await context.read<BookProvider>().searchBooks(query);
     setState(() {
       _isSearching = false;
     });
@@ -49,9 +50,13 @@ class _BooksListScreenState extends State<BooksListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final books = Provider.of<BookProvider>(context).books;
+    final books = context.watch<BookProvider>().books;
     final screenSize = MediaQuery.of(context).size;
     final isSmallScreen = screenSize.width < 600;
+
+    print('=== DEBUG: BooksListScreen Build ===');
+    print('Books count in build: ${books.length}');
+    print('Books: ${books.map((b) => '${b.title} (ID: ${b.id})').join(', ')}');
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -164,6 +169,25 @@ class _BooksListScreenState extends State<BooksListScreen> {
             ],
           ),
         ),
+        floatingActionButton: context.watch<AuthProvider>().isAdmin
+            ? FloatingActionButton(
+                onPressed: () async {
+                  print('=== DEBUG: Opening Add Book Screen ===');
+                  final result = await Navigator.of(context).pushNamed('/add_book');
+                  print('=== DEBUG: Back from Add Book Screen, result: $result ===');
+                  if (result == true) {
+                    print('=== DEBUG: Book was added, refreshing list ===');
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    await _loadBooks();
+                  }
+                },
+                backgroundColor: Colors.blue.shade700,
+                foregroundColor: Colors.white,
+                child: const Icon(Icons.add),
+              )
+            : null,
       ),
     );
   }

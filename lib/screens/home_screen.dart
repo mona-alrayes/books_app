@@ -37,9 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // تحديث الإحصائيات عند العودة إلى الصفحة
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!_loadingStats) {
       _loadStats();
-    });
+    }
   }
 
   Future<void> _loadStats() async {
@@ -48,12 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
+      print('=== DEBUG: Loading Stats ===');
       // جلب الإحصائيات من جميع الـ providers
       await Future.wait([
         _loadBooksCount(),
         _loadAuthorsCount(),
         _loadPublishersCount(),
       ]);
+      print('=== DEBUG: Stats Loaded ===');
     } catch (e) {
       print('خطأ في تحميل الإحصائيات: $e');
     } finally {
@@ -65,11 +67,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadBooksCount() async {
     try {
-      await Provider.of<BookProvider>(context, listen: false).fetchBooks();
-      final books = Provider.of<BookProvider>(context, listen: false).books;
+      print('=== DEBUG: Loading Books Count ===');
+      await context.read<BookProvider>().fetchBooks();
+      final books = context.read<BookProvider>().books;
+      print('=== DEBUG: Books Count ===');
+      print('Books count: ${books.length}');
+      print('Books: ${books.map((b) => '${b.title} (ID: ${b.id})').join(', ')}');
+      
       setState(() {
         _booksCount = books.length;
       });
+      print('=== DEBUG: Updated Books Count: $_booksCount ===');
     } catch (e) {
       print('خطأ في تحميل عدد الكتب: $e');
     }
@@ -77,8 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadAuthorsCount() async {
     try {
-      await Provider.of<AuthorProvider>(context, listen: false).fetchAuthors();
-      final authors = Provider.of<AuthorProvider>(context, listen: false).authors;
+      await context.read<AuthorProvider>().fetchAuthors();
+      final authors = context.read<AuthorProvider>().authors;
       setState(() {
         _authorsCount = authors.length;
       });
@@ -89,8 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadPublishersCount() async {
     try {
-      await Provider.of<PublisherProvider>(context, listen: false).fetchPublishers();
-      final publishers = Provider.of<PublisherProvider>(context, listen: false).publishers;
+      await context.read<PublisherProvider>().fetchPublishers();
+      final publishers = context.read<PublisherProvider>().publishers;
       setState(() {
         _publishersCount = publishers.length;
       });
@@ -150,450 +158,478 @@ class _HomeScreenState extends State<HomeScreen> {
               right: isSmallScreen ? 16 : 20,
               bottom: isSmallScreen ? 16 : 20,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Welcome Section
-                Container(
-                  padding: EdgeInsets.all(isSmallScreen ? 20 : 24),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.blue.shade700,
-                        Colors.blue.shade500,
-                      ],
+            child: Consumer<BookProvider>(
+              builder: (context, bookProvider, child) {
+                final books = bookProvider.books;
+                print('=== DEBUG: HomeScreen Consumer ===');
+                print('Books count in Consumer: ${books.length}');
+                
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Welcome Section
+                    Container(
+                      padding: EdgeInsets.all(isSmallScreen ? 20 : 24),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.shade700,
+                            Colors.blue.shade500,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.withOpacity(0.3),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Icon(
+                              Icons.library_books,
+                              size: isSmallScreen ? 32 : 40,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: isSmallScreen ? 16 : 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'مرحباً بك في مكتبة الكتب',
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen ? 20 : 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  auth.isAdmin
+                                      ? 'إدارة الكتب والمؤلفين والناشرين'
+                                      : 'استكشف مكتبة الكتب الرائعة',
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen ? 14 : 16,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
+
+                    SizedBox(height: isSmallScreen ? 24 : 30),
+
+                    // Quick Stats - دائماً أفقية
+                    if (!_loadingStats)
                       Container(
-                        padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+                        padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Icon(
-                          Icons.library_books,
-                          size: isSmallScreen ? 32 : 40,
                           color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(width: isSmallScreen ? 16 : 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              'مرحباً بك في مكتبة الكتب',
-                              style: TextStyle(
-                                fontSize: isSmallScreen ? 20 : 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.book,
+                                title: 'الكتب',
+                                count: books.length.toString(),
+                                color: Colors.blue,
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              auth.isAdmin
-                                  ? 'إدارة الكتب والمؤلفين والناشرين'
-                                  : 'استكشف مكتبة الكتب الرائعة',
-                              style: TextStyle(
-                                fontSize: isSmallScreen ? 14 : 16,
-                                color: Colors.white.withOpacity(0.9),
+                            SizedBox(width: isSmallScreen ? 12 : 16),
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.person,
+                                title: 'المؤلفين',
+                                count: _authorsCount.toString(),
+                                color: Colors.green,
+                              ),
+                            ),
+                            SizedBox(width: isSmallScreen ? 12 : 16),
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.business,
+                                title: 'الناشرين',
+                                count: _publishersCount.toString(),
+                                color: Colors.orange,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.book,
+                                title: 'الكتب',
+                                count: books.length.toString(),
+                                color: Colors.blue,
+                              ),
+                            ),
+                            SizedBox(width: isSmallScreen ? 12 : 16),
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.person,
+                                title: 'المؤلفين',
+                                count: _authorsCount.toString(),
+                                color: Colors.green,
+                              ),
+                            ),
+                            SizedBox(width: isSmallScreen ? 12 : 16),
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.business,
+                                title: 'الناشرين',
+                                count: _publishersCount.toString(),
+                                color: Colors.orange,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
 
-                SizedBox(height: isSmallScreen ? 24 : 30),
+                    SizedBox(height: isSmallScreen ? 24 : 30),
 
-                // Quick Stats - دائماً أفقية
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
+                    // Admin Actions
+                    if (auth.isAdmin) ...[
+                      // Admin Actions
+                      Text(
+                        'إدارة النظام',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 20 : 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      SizedBox(height: isSmallScreen ? 16 : 20),
+
+                      // Books Management
+                      _buildActionCard(
+                        context,
+                        title: 'إدارة الكتب',
+                        subtitle: 'إضافة وعرض وتعديل الكتب',
                         icon: Icons.book,
-                        title: 'الكتب',
-                        count: _loadingStats ? '...' : _booksCount.toString(),
-                        color: Colors.green,
+                        color: Colors.blue,
+                        onTap: () => Navigator.of(context).pushNamed('/books'),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildStatCard(
+
+                      const SizedBox(height: 16),
+
+                      // Authors Management
+                      _buildActionCard(
+                        context,
+                        title: 'إدارة المؤلفين',
+                        subtitle: 'إضافة وعرض وتعديل المؤلفين',
                         icon: Icons.person,
-                        title: 'المؤلفون',
-                        count: _loadingStats ? '...' : _authorsCount.toString(),
-                        color: Colors.orange,
+                        color: Colors.green,
+                        onTap: () => Navigator.of(context).pushNamed('/authors'),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildStatCard(
+
+                      const SizedBox(height: 16),
+
+                      // Publishers Management
+                      _buildActionCard(
+                        context,
+                        title: 'إدارة الناشرين',
+                        subtitle: 'إضافة وعرض وتعديل الناشرين',
                         icon: Icons.business,
-                        title: 'الناشرون',
-                        count: _loadingStats ? '...' : _publishersCount.toString(),
-                        color: Colors.purple,
+                        color: Colors.orange,
+                        onTap: () =>
+                            Navigator.of(context).pushNamed('/publishers'),
                       ),
-                    ),
+
+                      SizedBox(height: isSmallScreen ? 24 : 30),
+
+                      // Quick Actions
+                      Text(
+                        'إجراءات سريعة',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 20 : 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      SizedBox(height: isSmallScreen ? 16 : 20),
+
+                      // Quick Actions Grid
+                      if (isSmallScreen)
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildQuickActionButton(
+                                      context,
+                                      title: 'إضافة كتاب',
+                                      icon: Icons.add,
+                                      color: Colors.blue,
+                                      loading: _loadingBook,
+                                      onTap: () async {
+                                        setState(() => _loadingBook = true);
+                                        await Navigator.of(context)
+                                            .pushNamed('/add_book');
+                                        setState(() => _loadingBook = false);
+                                        // تحديث الإحصائيات بعد إضافة كتاب جديد
+                                        _loadStats();
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: _buildQuickActionButton(
+                                      context,
+                                      title: 'إضافة مؤلف',
+                                      icon: Icons.person_add,
+                                      color: Colors.green,
+                                      loading: _loadingAuthor,
+                                      onTap: () async {
+                                        setState(() => _loadingAuthor = true);
+                                        await Navigator.of(context)
+                                            .pushNamed('/add_author');
+                                        setState(() => _loadingAuthor = false);
+                                        // تحديث الإحصائيات بعد إضافة مؤلف جديد
+                                        _loadStats();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildQuickActionButton(
+                                      context,
+                                      title: 'إضافة ناشر',
+                                      icon: Icons.business_center,
+                                      color: Colors.orange,
+                                      loading: _loadingPublisher,
+                                      onTap: () async {
+                                        setState(() => _loadingPublisher = true);
+                                        await Navigator.of(context)
+                                            .pushNamed('/add_publisher');
+                                        setState(() => _loadingPublisher = false);
+                                        // تحديث الإحصائيات بعد إضافة ناشر جديد
+                                        _loadStats();
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Container(), // مساحة فارغة
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (isMediumScreen)
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildQuickActionButton(
+                                      context,
+                                      title: 'إضافة كتاب',
+                                      icon: Icons.add,
+                                      color: Colors.blue,
+                                      loading: _loadingBook,
+                                      onTap: () async {
+                                        setState(() => _loadingBook = true);
+                                        await Navigator.of(context)
+                                            .pushNamed('/add_book');
+                                        setState(() => _loadingBook = false);
+                                        // تحديث الإحصائيات بعد إضافة كتاب جديد
+                                        _loadStats();
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: _buildQuickActionButton(
+                                      context,
+                                      title: 'إضافة مؤلف',
+                                      icon: Icons.person_add,
+                                      color: Colors.green,
+                                      loading: _loadingAuthor,
+                                      onTap: () async {
+                                        setState(() => _loadingAuthor = true);
+                                        await Navigator.of(context)
+                                            .pushNamed('/add_author');
+                                        setState(() => _loadingAuthor = false);
+                                        // تحديث الإحصائيات بعد إضافة مؤلف جديد
+                                        _loadStats();
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: _buildQuickActionButton(
+                                      context,
+                                      title: 'إضافة ناشر',
+                                      icon: Icons.business_center,
+                                      color: Colors.orange,
+                                      loading: _loadingPublisher,
+                                      onTap: () async {
+                                        setState(() => _loadingPublisher = true);
+                                        await Navigator.of(context)
+                                            .pushNamed('/add_publisher');
+                                        setState(() => _loadingPublisher = false);
+                                        // تحديث الإحصائيات بعد إضافة ناشر جديد
+                                        _loadStats();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        SingleChildScrollView(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _buildQuickActionButton(
+                                  context,
+                                  title: 'إضافة كتاب',
+                                  icon: Icons.add,
+                                  color: Colors.blue,
+                                  loading: _loadingBook,
+                                  onTap: () async {
+                                    setState(() => _loadingBook = true);
+                                    await Navigator.of(context)
+                                        .pushNamed('/add_book');
+                                    setState(() => _loadingBook = false);
+                                    // تحديث الإحصائيات بعد إضافة كتاب جديد
+                                    _loadStats();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildQuickActionButton(
+                                  context,
+                                  title: 'إضافة مؤلف',
+                                  icon: Icons.person_add,
+                                  color: Colors.green,
+                                  loading: _loadingAuthor,
+                                  onTap: () async {
+                                    setState(() => _loadingAuthor = true);
+                                    await Navigator.of(context)
+                                        .pushNamed('/add_author');
+                                    setState(() => _loadingAuthor = false);
+                                    // تحديث الإحصائيات بعد إضافة مؤلف جديد
+                                    _loadStats();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildQuickActionButton(
+                                  context,
+                                  title: 'إضافة ناشر',
+                                  icon: Icons.business_center,
+                                  color: Colors.orange,
+                                  loading: _loadingPublisher,
+                                  onTap: () async {
+                                    setState(() => _loadingPublisher = true);
+                                    await Navigator.of(context)
+                                        .pushNamed('/add_publisher');
+                                    setState(() => _loadingPublisher = false);
+                                    // تحديث الإحصائيات بعد إضافة ناشر جديد
+                                    _loadStats();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ] else ...[
+                      // User Actions
+                      Text(
+                        'استكشف المكتبة',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 20 : 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      SizedBox(height: isSmallScreen ? 16 : 20),
+
+                      _buildActionCard(
+                        context,
+                        title: 'استكشف الكتب',
+                        subtitle: 'تصفح جميع الكتب المتاحة',
+                        icon: Icons.book,
+                        color: Colors.blue,
+                        onTap: () => Navigator.of(context).pushNamed('/books'),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      _buildActionCard(
+                        context,
+                        title: 'البحث عن المؤلفين',
+                        subtitle: 'ابحث عن المؤلفين وكتبهم',
+                        icon: Icons.person_search,
+                        color: Colors.green,
+                        onTap: () => Navigator.of(context).pushNamed('/search_authors'),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      _buildActionCard(
+                        context,
+                        title: 'البحث عن الناشرين',
+                        subtitle: 'ابحث عن الناشرين وكتبهم',
+                        icon: Icons.business_center,
+                        color: Colors.orange,
+                        onTap: () => Navigator.of(context).pushNamed('/search_publishers'),
+                      ),
+                    ],
                   ],
-                ),
-
-                SizedBox(height: isSmallScreen ? 24 : 30),
-
-                // Main Actions
-                Text(
-                  'إدارة المكتبة',
-                  style: TextStyle(
-                    fontSize: isSmallScreen ? 20 : 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: isSmallScreen ? 16 : 20),
-
-                if (auth.isAdmin) ...[
-                  // Books Management
-                  _buildActionCard(
-                    context,
-                    title: 'إدارة الكتب',
-                    subtitle: 'إضافة وعرض وتعديل الكتب',
-                    icon: Icons.book,
-                    color: Colors.blue,
-                    onTap: () => Navigator.of(context).pushNamed('/books'),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Authors Management
-                  _buildActionCard(
-                    context,
-                    title: 'إدارة المؤلفين',
-                    subtitle: 'إضافة وعرض وتعديل المؤلفين',
-                    icon: Icons.person,
-                    color: Colors.green,
-                    onTap: () => Navigator.of(context).pushNamed('/authors'),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Publishers Management
-                  _buildActionCard(
-                    context,
-                    title: 'إدارة الناشرين',
-                    subtitle: 'إضافة وعرض وتعديل الناشرين',
-                    icon: Icons.business,
-                    color: Colors.orange,
-                    onTap: () =>
-                        Navigator.of(context).pushNamed('/publishers'),
-                  ),
-
-                  SizedBox(height: isSmallScreen ? 24 : 30),
-
-                  // Quick Actions
-                  Text(
-                    'إجراءات سريعة',
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 20 : 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: isSmallScreen ? 16 : 20),
-
-                  // Quick Actions Grid
-                  if (isSmallScreen)
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildQuickActionButton(
-                                  context,
-                                  title: 'إضافة كتاب',
-                                  icon: Icons.add,
-                                  color: Colors.blue,
-                                  loading: _loadingBook,
-                                  onTap: () async {
-                                    setState(() => _loadingBook = true);
-                                    await Navigator.of(context)
-                                        .pushNamed('/add_book');
-                                    setState(() => _loadingBook = false);
-                                    // تحديث الإحصائيات بعد إضافة كتاب جديد
-                                    _loadStats();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildQuickActionButton(
-                                  context,
-                                  title: 'إضافة مؤلف',
-                                  icon: Icons.person_add,
-                                  color: Colors.green,
-                                  loading: _loadingAuthor,
-                                  onTap: () async {
-                                    setState(() => _loadingAuthor = true);
-                                    await Navigator.of(context)
-                                        .pushNamed('/add_author');
-                                    setState(() => _loadingAuthor = false);
-                                    // تحديث الإحصائيات بعد إضافة مؤلف جديد
-                                    _loadStats();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildQuickActionButton(
-                                  context,
-                                  title: 'إضافة ناشر',
-                                  icon: Icons.business_center,
-                                  color: Colors.orange,
-                                  loading: _loadingPublisher,
-                                  onTap: () async {
-                                    setState(() => _loadingPublisher = true);
-                                    await Navigator.of(context)
-                                        .pushNamed('/add_publisher');
-                                    setState(() => _loadingPublisher = false);
-                                    // تحديث الإحصائيات بعد إضافة ناشر جديد
-                                    _loadStats();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildQuickActionButton(
-                                  context,
-                                  title: 'البحث',
-                                  icon: Icons.search,
-                                  color: Colors.purple,
-                                  loading: false,
-                                  onTap: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'سيتم إضافة ميزة البحث قريباً'),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  else if (isMediumScreen)
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildQuickActionButton(
-                                  context,
-                                  title: 'إضافة كتاب',
-                                  icon: Icons.add,
-                                  color: Colors.blue,
-                                  loading: _loadingBook,
-                                  onTap: () async {
-                                    setState(() => _loadingBook = true);
-                                    await Navigator.of(context)
-                                        .pushNamed('/add_book');
-                                    setState(() => _loadingBook = false);
-                                    // تحديث الإحصائيات بعد إضافة كتاب جديد
-                                    _loadStats();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: _buildQuickActionButton(
-                                  context,
-                                  title: 'إضافة مؤلف',
-                                  icon: Icons.person_add,
-                                  color: Colors.green,
-                                  loading: _loadingAuthor,
-                                  onTap: () async {
-                                    setState(() => _loadingAuthor = true);
-                                    await Navigator.of(context)
-                                        .pushNamed('/add_author');
-                                    setState(() => _loadingAuthor = false);
-                                    // تحديث الإحصائيات بعد إضافة مؤلف جديد
-                                    _loadStats();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: _buildQuickActionButton(
-                                  context,
-                                  title: 'إضافة ناشر',
-                                  icon: Icons.business_center,
-                                  color: Colors.orange,
-                                  loading: _loadingPublisher,
-                                  onTap: () async {
-                                    setState(() => _loadingPublisher = true);
-                                    await Navigator.of(context)
-                                        .pushNamed('/add_publisher');
-                                    setState(() => _loadingPublisher = false);
-                                    // تحديث الإحصائيات بعد إضافة ناشر جديد
-                                    _loadStats();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: screenSize.width * 0.33,
-                            child: _buildQuickActionButton(
-                              context,
-                              title: 'البحث',
-                              icon: Icons.search,
-                              color: Colors.purple,
-                              loading: false,
-                              onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('سيتم إضافة ميزة البحث قريباً'),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    SingleChildScrollView(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildQuickActionButton(
-                              context,
-                              title: 'إضافة كتاب',
-                              icon: Icons.add,
-                              color: Colors.blue,
-                              loading: _loadingBook,
-                              onTap: () async {
-                                setState(() => _loadingBook = true);
-                                await Navigator.of(context)
-                                    .pushNamed('/add_book');
-                                setState(() => _loadingBook = false);
-                                // تحديث الإحصائيات بعد إضافة كتاب جديد
-                                _loadStats();
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildQuickActionButton(
-                              context,
-                              title: 'إضافة مؤلف',
-                              icon: Icons.person_add,
-                              color: Colors.green,
-                              loading: _loadingAuthor,
-                              onTap: () async {
-                                setState(() => _loadingAuthor = true);
-                                await Navigator.of(context)
-                                    .pushNamed('/add_author');
-                                setState(() => _loadingAuthor = false);
-                                // تحديث الإحصائيات بعد إضافة مؤلف جديد
-                                _loadStats();
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildQuickActionButton(
-                              context,
-                              title: 'إضافة ناشر',
-                              icon: Icons.business_center,
-                              color: Colors.orange,
-                              loading: _loadingPublisher,
-                              onTap: () async {
-                                setState(() => _loadingPublisher = true);
-                                await Navigator.of(context)
-                                    .pushNamed('/add_publisher');
-                                setState(() => _loadingPublisher = false);
-                                // تحديث الإحصائيات بعد إضافة ناشر جديد
-                                _loadStats();
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildQuickActionButton(
-                              context,
-                              title: 'البحث',
-                              icon: Icons.search,
-                              color: Colors.purple,
-                              loading: false,
-                              onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('سيتم إضافة ميزة البحث قريباً'),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ] else ...[
-                  // User Actions
-                  _buildActionCard(
-                    context,
-                    title: 'استكشف الكتب',
-                    subtitle: 'تصفح جميع الكتب المتاحة',
-                    icon: Icons.book,
-                    color: Colors.blue,
-                    onTap: () => Navigator.of(context).pushNamed('/books'),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  _buildActionCard(
-                    context,
-                    title: 'البحث عن المؤلفين',
-                    subtitle: 'ابحث عن المؤلفين وكتبهم',
-                    icon: Icons.person_search,
-                    color: Colors.green,
-                    onTap: () => Navigator.of(context).pushNamed('/search_authors'),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  _buildActionCard(
-                    context,
-                    title: 'البحث عن الناشرين',
-                    subtitle: 'ابحث عن الناشرين وكتبهم',
-                    icon: Icons.business_center,
-                    color: Colors.orange,
-                    onTap: () => Navigator.of(context).pushNamed('/search_publishers'),
-                  ),
-                ],
-              ],
+                );
+              },
             ),
           ),
         ),

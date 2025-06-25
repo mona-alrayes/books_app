@@ -24,7 +24,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
   }
 
   Future<void> _fetchBookDetails(int id) async {
-    final book = await Provider.of<BookProvider>(context, listen: false).fetchBookById(id);
+    final book = await context.read<BookProvider>().fetchBookById(id);
     setState(() {
       _book = book;
       _isLoading = false;
@@ -39,7 +39,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
+      appBar: AppBar(
           title: const Text('تفاصيل الكتاب'),
           backgroundColor: Colors.blue.shade700,
           foregroundColor: Colors.white,
@@ -49,8 +49,8 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
               bottom: Radius.circular(20),
             ),
           ),
-        ),
-        body: _isLoading
+      ),
+      body: _isLoading
             ? Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -190,7 +190,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                   children: [
                                     Icon(Icons.book, color: Colors.blue.shade600),
                                     const SizedBox(width: 8),
-                                    Text(
+                      Text(
                                       'معلومات الكتاب',
                                       style: TextStyle(
                                         fontSize: isSmallScreen ? 16 : 18,
@@ -199,7 +199,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                       ),
                                     ),
                                   ],
-                                ),
+                      ),
                                 SizedBox(height: isSmallScreen ? 12 : 16),
                                 Text(
                                   _book!.title,
@@ -419,7 +419,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                         color: Colors.green.shade600,
                                       ),
                                     ),
-                                  ],
+                    ],
                                 ),
                               ],
                             ),
@@ -515,7 +515,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                       ),
                     ),
                   ),
-      ),
+                ),
     );
   }
 }

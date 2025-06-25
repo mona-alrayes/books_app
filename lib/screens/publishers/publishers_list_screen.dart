@@ -62,7 +62,7 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
+      appBar: AppBar(
           title: const Text('الناشرون'),
           backgroundColor: Colors.orange.shade700,
           foregroundColor: Colors.white,
@@ -72,7 +72,7 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
               bottom: Radius.circular(20),
             ),
           ),
-        ),
+      ),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -85,7 +85,7 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
             ),
           ),
           child: Column(
-            children: [
+        children: [
               // Search Section
               Container(
                 padding: const EdgeInsets.all(20),
@@ -101,9 +101,9 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
                       ),
                     ],
                   ),
-                  child: TextField(
+            child: TextField(
                     controller: _searchController,
-                    decoration: InputDecoration(
+              decoration: InputDecoration(
                       labelText: 'البحث في الناشرين...',
                       prefixIcon: Icon(Icons.search, color: Colors.orange.shade600),
                       suffixIcon: _searchQuery.isNotEmpty
@@ -125,15 +125,15 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
                         horizontal: 20,
                         vertical: 16,
                       ),
-                    ),
-                    onChanged: _search,
-                  ),
-                ),
+              ),
+              onChanged: _search,
+            ),
+          ),
               ),
 
               // Publishers List
-              Expanded(
-                child: _isLoading
+          Expanded(
+            child: _isLoading
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -154,7 +154,7 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
                           ],
                         ),
                       )
-                    : publishers.isEmpty
+                : publishers.isEmpty
                         ? _buildEmptyState()
                         : _buildPublishersList(publishers),
               ),
@@ -215,9 +215,9 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: publishers.length,
-      itemBuilder: (ctx, i) {
-        final publisher = publishers[i];
+                        itemCount: publishers.length,
+                        itemBuilder: (ctx, i) {
+                          final publisher = publishers[i];
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
@@ -234,15 +234,15 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  PublisherBooksScreen.routeName,
-                  arguments: {
-                    'id': publisher.id,
-                    'name': publisher.name,
-                  },
-                );
-              },
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                PublisherBooksScreen.routeName,
+                                arguments: {
+                                  'id': publisher.id,
+                                  'name': publisher.name,
+                                },
+                              );
+                            },
               borderRadius: BorderRadius.circular(16),
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -293,10 +293,10 @@ class _PublishersListScreenState extends State<PublishersListScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
-                          ),
+                      ),
+          ),
+        ],
+      ),
                         ],
                       ),
                     ),

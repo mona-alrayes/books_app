@@ -48,14 +48,21 @@ class ApiService {
 
   /// GET request
   static Future<dynamic> get(String endpoint) async {
-  final url = Uri.parse('$baseUrl$endpoint');
-  final response = await http.get(url, headers: _headers());
-  print('GET $url status: ${response.statusCode}');
-  print('Response body: ${response.body}');
-  _handleErrors(response);
-  return jsonDecode(response.body);
-}
-
+    final url = Uri.parse('$baseUrl$endpoint');
+    print('=== DEBUG: GET Request ===');
+    print('URL: $url');
+    print('Headers: ${_headers()}');
+    
+    final response = await http.get(url, headers: _headers());
+    print('GET $url status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    
+    _handleErrors(response);
+    final decoded = jsonDecode(response.body);
+    print('=== DEBUG: Decoded Response ===');
+    print('Decoded: $decoded');
+    return decoded;
+  }
 
   /// POST request with JSON body
   static Future<dynamic> post(
@@ -77,6 +84,12 @@ class ApiService {
     String? filePath,
   }) async {
     final url = Uri.parse('$baseUrl$endpoint');
+    print('=== DEBUG: POST Multipart Request ===');
+    print('URL: $url');
+    print('Fields: $fields');
+    print('File Path: $filePath');
+    print('Headers: ${_headers(isJson: false)}');
+    
     final request = http.MultipartRequest('POST', url)
       ..headers.addAll(_headers(isJson: false))
       ..fields.addAll(fields);
@@ -88,8 +101,16 @@ class ApiService {
 
     final streamed = await request.send();
     final response = await http.Response.fromStream(streamed);
+    
+    print('=== DEBUG: POST Multipart Response ===');
+    print('Status: ${response.statusCode}');
+    print('Body: ${response.body}');
+    
     _handleErrors(response);
-    return jsonDecode(response.body);
+    final decoded = jsonDecode(response.body);
+    print('=== DEBUG: Decoded Multipart Response ===');
+    print('Decoded: $decoded');
+    return decoded;
   }
 
   // ——————————————————————
@@ -171,6 +192,14 @@ class ApiService {
     required int publisherId,
     File? coverImage,
   }) async {
+    print('=== DEBUG: Adding Book ===');
+    print('Title: $title');
+    print('Type: $type');
+    print('Price: $price');
+    print('Author ID: $authorId');
+    print('Publisher ID: $publisherId');
+    print('Cover Image: ${coverImage?.path}');
+    
     final fields = {
       'Title': title,
       'Type': type,
@@ -178,6 +207,17 @@ class ApiService {
       'author_id': authorId.toString(),
       'publisher_id': publisherId.toString(),
     };
-    await postMultipart('/books', fields, filePath: coverImage?.path);
+    
+    print('Fields to send: $fields');
+    
+    try {
+      final response = await postMultipart('/books', fields, filePath: coverImage?.path);
+      print('=== DEBUG: Book Added Successfully ===');
+      print('Response: $response');
+    } catch (e) {
+      print('=== DEBUG: Error Adding Book ===');
+      print('Error: $e');
+      rethrow;
+    }
   }
 }

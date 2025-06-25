@@ -5,15 +5,34 @@ import '../services/api_service.dart';
 class BookProvider with ChangeNotifier {
   List<Book> _books = [];
 
-  List<Book> get books => [..._books];
+  List<Book> get books {
+    print('=== DEBUG: Books Getter Called ===');
+    print('Current books count: ${_books.length}');
+    print('Books: ${_books.map((b) => '${b.title} (ID: ${b.id})').join(', ')}');
+    return [..._books];
+  }
 
   /// Fetch all books
   Future<void> fetchBooks() async {
     try {
+      print('=== DEBUG: Fetching Books ===');
       final data = await ApiService.get('/books');
+      print('Raw response: $data');
+      
       final items = data['data'] as List;
+      print('Books count: ${items.length}');
+      
       _books = items.map((json) => Book.fromJson(json)).toList();
+      print('Parsed books: ${_books.map((b) => '${b.title} (ID: ${b.id})').join(', ')}');
+      
+      print('=== DEBUG: Notifying Listeners ===');
       notifyListeners();
+      print('=== DEBUG: Listeners Notified ===');
+      
+      // تحقق إضافي من البيانات بعد notifyListeners
+      print('=== DEBUG: After notifyListeners ===');
+      print('_books count: ${_books.length}');
+      print('_books: ${_books.map((b) => '${b.title} (ID: ${b.id})').join(', ')}');
     } catch (e) {
       print('حدث خطأ أثناء جلب الكتب: $e');
     }

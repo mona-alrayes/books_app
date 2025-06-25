@@ -54,7 +54,7 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
+      appBar: AppBar(
           title: const Text('المؤلفون'),
           backgroundColor: Colors.green.shade700,
           foregroundColor: Colors.white,
@@ -64,7 +64,7 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
               bottom: Radius.circular(20),
             ),
           ),
-        ),
+      ),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -77,7 +77,7 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
             ),
           ),
           child: Column(
-            children: [
+        children: [
               // Search Section
               Container(
                 padding: const EdgeInsets.all(20),
@@ -93,9 +93,9 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
                       ),
                     ],
                   ),
-                  child: TextField(
+            child: TextField(
                     controller: _searchController,
-                    decoration: InputDecoration(
+              decoration: InputDecoration(
                       labelText: 'البحث في المؤلفين...',
                       prefixIcon: Icon(Icons.search, color: Colors.green.shade600),
                       suffixIcon: _searchQuery.isNotEmpty
@@ -117,20 +117,20 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
                         horizontal: 20,
                         vertical: 16,
                       ),
-                    ),
-                    onSubmitted: _search,
+              ),
+              onSubmitted: _search,
                     onChanged: (value) {
                       if (value.isEmpty) {
                         _search('');
                       }
                     },
-                  ),
+          ),
                 ),
               ),
 
               // Authors List
-              Expanded(
-                child: _isLoading
+          Expanded(
+            child: _isLoading
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -151,7 +151,7 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
                           ],
                         ),
                       )
-                    : authors.isEmpty
+                : authors.isEmpty
                         ? _buildEmptyState()
                         : _buildAuthorsList(authors),
               ),
@@ -212,9 +212,9 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: authors.length,
-      itemBuilder: (ctx, i) {
-        Author author = authors[i];
+                        itemCount: authors.length,
+                        itemBuilder: (ctx, i) {
+                          Author author = authors[i];
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
@@ -231,15 +231,15 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  AuthorBooksScreen.routeName,
-                  arguments: {
-                    'id': author.id,
-                    'name': '${author.fName} ${author.lName}',
-                  },
-                );
-              },
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                AuthorBooksScreen.routeName,
+                                arguments: {
+                                  'id': author.id,
+                                  'name': '${author.fName} ${author.lName}',
+                                },
+                              );
+                            },
               borderRadius: BorderRadius.circular(16),
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -290,10 +290,10 @@ class _AuthorsListScreenState extends State<AuthorsListScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
-                          ),
+                      ),
+          ),
+        ],
+      ),
                           
                           if (author.city != null && author.city!.isNotEmpty) ...[
                             const SizedBox(height: 4),

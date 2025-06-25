@@ -14,8 +14,11 @@ import 'screens/books/book_details_screen.dart';
 import 'screens/publishers/add_publisher_screen.dart';
 import 'screens/publishers/publisher_books_screen.dart';
 import 'screens/publishers/search_publishers_screen.dart';
+import 'screens/publishers/publishers_list_screen.dart';
 import 'screens/authors/add_author_screen.dart';
 import 'screens/authors/search_authors_screen.dart';
+import 'screens/authors/author_books_screen.dart';
+import 'screens/authors/authors_list_screen.dart';
 import 'utils/create_simple_icon.dart';
 
 void main() async {
@@ -101,6 +104,11 @@ class MyApp extends StatelessWidget {
           '/register': (_) => const RegisterScreen(),
           '/search_publishers': (_) => const SearchPublishersScreen(),
           '/search_authors': (_) => const SearchAuthorsScreen(),
+          '/author-books': (_) => const AuthorBooksScreen(),
+          '/authors': (_) => AuthorsListScreen(),
+          '/authors_list': (_) => AuthorsListScreen(),
+          '/publishers': (_) => PublishersListScreen(),
+          '/publishers_list': (_) => PublishersListScreen(),
         },
       ),
     );

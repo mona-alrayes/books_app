@@ -227,41 +227,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         // Username Field
                         _buildTextField(
-                          controller: _usernameCtrl,
+                    controller: _usernameCtrl,
                           label: 'اسم المستخدم',
                           icon: Icons.account_circle,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'يرجى إدخال اسم المستخدم';
-                            }
-                            if (value.trim().length < 4) {
-                              return 'يجب أن يكون اسم المستخدم 4 أحرف على الأقل';
-                            }
-                            return null;
-                          },
-                        ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'يرجى إدخال اسم المستخدم';
+                      }
+                      if (value.trim().length < 4) {
+                        return 'يجب أن يكون اسم المستخدم 4 أحرف على الأقل';
+                      }
+                      return null;
+                    },
+                  ),
                         
                         const SizedBox(height: 16),
                         
                         // First Name Field
                         _buildTextField(
-                          controller: _fNameCtrl,
+                    controller: _fNameCtrl,
                           label: 'الاسم الأول',
                           icon: Icons.person_outline,
-                          validator: (value) =>
-                              (value == null || value.trim().isEmpty) ? 'يرجى إدخال الاسم الأول' : null,
-                        ),
+                    validator: (value) =>
+                        (value == null || value.trim().isEmpty) ? 'يرجى إدخال الاسم الأول' : null,
+                  ),
                         
                         const SizedBox(height: 16),
                         
                         // Last Name Field
                         _buildTextField(
-                          controller: _lNameCtrl,
+                    controller: _lNameCtrl,
                           label: 'اسم العائلة',
                           icon: Icons.person_outline,
-                          validator: (value) =>
-                              (value == null || value.trim().isEmpty) ? 'يرجى إدخال اسم العائلة' : null,
-                        ),
+                    validator: (value) =>
+                        (value == null || value.trim().isEmpty) ? 'يرجى إدخال اسم العائلة' : null,
+                  ),
                       ],
                     ),
                   ),
@@ -303,27 +303,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         // Email Field
                         _buildTextField(
-                          controller: _emailCtrl,
+                    controller: _emailCtrl,
                           label: 'البريد الإلكتروني',
                           icon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'يرجى إدخال البريد الإلكتروني';
-                            }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                .hasMatch(value.trim())) {
-                              return 'يرجى إدخال بريد إلكتروني صالح';
-                            }
-                            return null;
-                          },
-                        ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'يرجى إدخال البريد الإلكتروني';
+                      }
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                          .hasMatch(value.trim())) {
+                        return 'يرجى إدخال بريد إلكتروني صالح';
+                      }
+                      return null;
+                    },
+                  ),
                         
                         const SizedBox(height: 16),
                         
                         // Password Field
                         _buildPasswordField(
-                          controller: _passwordCtrl,
+                    controller: _passwordCtrl,
                           label: 'كلمة المرور',
                           obscureText: _obscurePassword,
                           onToggleVisibility: () {
@@ -331,22 +331,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _obscurePassword = !_obscurePassword;
                             });
                           },
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'يرجى إدخال كلمة المرور';
-                            }
-                            if (value.trim().length < 6) {
-                              return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
-                            }
-                            return null;
-                          },
-                        ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'يرجى إدخال كلمة المرور';
+                      }
+                      if (value.trim().length < 6) {
+                        return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                      }
+                      return null;
+                    },
+                  ),
                         
                         const SizedBox(height: 16),
                         
                         // Confirm Password Field
                         _buildPasswordField(
-                          controller: _passwordConfirmCtrl,
+                    controller: _passwordConfirmCtrl,
                           label: 'تأكيد كلمة المرور',
                           obscureText: _obscureConfirmPassword,
                           onToggleVisibility: () {
@@ -354,15 +354,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _obscureConfirmPassword = !_obscureConfirmPassword;
                             });
                           },
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'يرجى تأكيد كلمة المرور';
-                            }
-                            if (value.trim() != _passwordCtrl.text.trim()) {
-                              return 'كلمة المرور غير متطابقة';
-                            }
-                            return null;
-                          },
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'يرجى تأكيد كلمة المرور';
+                      }
+                      if (value.trim() != _passwordCtrl.text.trim()) {
+                        return 'كلمة المرور غير متطابقة';
+                      }
+                      return null;
+                    },
                         ),
                       ],
                     ),
@@ -445,7 +445,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ],
-                  ),
+                        ),
                 ],
               ),
             ),
